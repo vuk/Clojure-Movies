@@ -1,0 +1,58 @@
+h2. clj-web-crawler
+
+clj-web-crawler allows you to easily crawl the web from the comfort of your newfound Lisp 
+dialect that runs on the JVM, Clojure.  This Clojure script is a wrapper around the Apache 
+commons-client Java library. 
+
+h3. Usage 
+
+<pre><code>
+; The crawl macro also accepts a client, a method and a body. 
+; In the body of crawl, you can examine various things like 
+; the status code, the response, etc.
+(let [clj-ws (client "http://www.clojure.org")
+      home  (method "/")] 
+  (crawl clj-ws home
+    (println (.getStatusCode home))  
+    (println (response-str home))))  
+
+; If you need to login to a website you can do that too and
+; verify any cookies are set to validate the login
+(let [site (client "http://www.example.com")
+      login (method "/accounts/login" :post {:login "doctor_no" :password "clojure"})] 
+  (crawl site login 
+    (if (assert-cookie-names site "username" "logged-in")  
+      (println "yeah, I'm in")
+      (println "I can't remember my password again!"))))
+
+; the crawl-response function is for quick and dirty things and just returns the 
+; response as a string from the server
+(println (crawl-response "http://www.clojure.org"))
+
+; prints the HTML of the clojure.org/api page and always defaults to a GET request
+(println (crawl-response "http://www.clojure.org" "/api"))
+
+; you can also pass in a real method object 
+(println (crawl-response "http://www.example.com" (method "/do_login" :post {:login "me"}))
+
+</code></pre>
+
+
+I've only implemented some basic functionality to make the commons-client
+more in line with functional programming.  There are lots of things that
+could be added to this Clojure script. 
+
+Since I'm calling commons-client under the covers I've using the underlying
+naming conventions.  The client function returns a 
+org.apache.commons.httpclient.HttpClient and the method function returns 
+an implementation of org.apache.commons.httpclient.HttpMethodBase.  Please
+see the commons-client API docs for reference.
+
+
+h3. Requirements 
+
+* clojure-contrib
+* Apache commons-client 3.1 and its dependencies (only tested with the 3.1 version)
+
+
+Any comments, suggestions, improvements are welcome! 
