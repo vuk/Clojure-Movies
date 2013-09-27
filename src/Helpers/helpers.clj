@@ -49,6 +49,13 @@
                    [(e/attr= :itemprop value)]))
   (get-in (first imgtag) [:attrs :src]))
 
+(defn getdatepublished
+  "Extract datepublished from HTML"
+  [html value]
+  (def datepublish (e/select-nodes* (e/html-snippet html)
+                   [(e/attr= :itemprop value)]))
+  (get-in (first datepublish) [:attrs :content]))
+
 (defn extractmovie
   "Extract movie data from HTML"
   [html]
@@ -59,8 +66,8 @@
              :duration (getitemprop html "duration")
              :genre (getitemprop html "genre")
              :image (getimage html "image")
-             :datepublished (getitemprop html "datepublished")
-             :productioncompany (getitemprop html "productioncompany")
+             :datepublished (getdatepublished html "datePublished")
+             :productioncompany (getitemprop html "productionCompany")
              :type "http://schema.org/Movie"))
   currentmovie
   )
