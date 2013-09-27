@@ -1,11 +1,20 @@
 (ns Movies.core
-  (:require [itsy.core :refer :all] [Helpers.helpers :refer :all]))
+  (:require [itsy.core :refer :all] 
+            [Helpers.helpers :refer :all]
+            [db.mongo :refer :all]
+            [somnium.congomongo :as m]))
+
+(def conn
+  (m/make-connection "mydb"
+                     :host "127.0.0.1"
+                     :port 27017))
+(m/set-connection! conn)
 
 (defn my-handler [{:keys [url body]}]
   ;;(println url "has a count of" (count body))
   (if (urlvalidator url) 
     (if (urlismovie url) 
-      (println (extractmovie body)) 
+      (insertmovie (extractmovie body)) 
       false) 
     false))
 

@@ -8,7 +8,7 @@
   [substring ^String s]
   (.contains s substring))
 
-(defstruct movie :name :description :contentrating :duration :genre :datepublished :productioncompany :image :type)
+(defstruct movie :name :description :contentrating :duration :genre :datepublished :productioncompany :image :type :uri)
 
 (defn urlvalidator 
   "Validate if url should be used. Only movie and actor urls are taken into account"
