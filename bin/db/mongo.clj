@@ -1,6 +1,7 @@
 (ns db.mongo
   (:require [somnium.congomongo :as m]
-            [hiccup.core :refer :all]))
+            [hiccup.core :refer :all]
+            [hiccup.page :refer :all]))
 
 (def conn
   (m/make-connection "movies"
@@ -19,9 +20,11 @@
   "Echo single movie"
   [movie]
   [:div {:class "row"} 
-	 [:div {:class "span3"} (get movie :name)]
+	 [:div {:class "span3"} [:a {:href (clojure.string/join ["/movie/" (get movie :name)])} (get movie :name)]]
 	 [:div {:class "span3"} (get movie :datepublished)]
 	 [:div {:class "span6"} (get movie :description)]
+  [:div {:class "clearfix"}]
+  [:hr]
 	 ]
   )
 
@@ -31,7 +34,7 @@
   (if (not (empty? movies))
     ;;first pass - no previous response - wrap current response in container
     (do
-      (echofirst (rest movies) (into [:div {:class "container"}] [(echosingle (first movies))]))
+      (echofirst (rest movies) (into [:div] [(echosingle (first movies))]))
       )
     ))
   ([movies response]
@@ -49,9 +52,18 @@
   "Create structure for all movies"
   [movies]
   ;(println movies)
-  (html (if (not (empty? movies))
+  (html 
+    [:html
+     [:head
+      [:title "Naslovna"]
+      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      ]
+     [:body 
+      [:div {:class "container"}
+       [:h1 "Movies"]
+      (if (not (empty? movies))
           (echofirst movies)
-          )
+          )]]]
         )
   )
 
@@ -64,4 +76,37 @@
   ;(println movies)
   (returnall movies)
   )
+
+(defn getsingle
+  "Get single movie"
+  [name]
+  (def movie (m/fetch-one :movie
+                          :where {:name name}))
+  (println movie)
+  (html 
+    [:html
+     [:head
+      [:title (str "Movie - " (get movie :name))]
+      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      ]
+     [:body 
+      [:div {:class "container"}
+       [:h1 (get movie :name)]
+       [:div {:class "well"}
+        [:div {:class "row"}
+         [:div {:class "span3"}
+          [:p "Duration: "
+           [:i (get movie :duration)]]
+          [:p "Publish date: "
+           [:i (get movie :datepublished)]]
+          [:img {:src (get movie :image)}]
+         ]
+         [:div {:class "span6"}
+          [:h2 "Description"]
+          [:p (get movie :description)]
+          [:p [:strong "Production Company: "] (get movie :productioncompany)]]
+         ]
+        ]
+       ]
+      ]]))
 
