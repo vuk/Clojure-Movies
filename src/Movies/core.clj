@@ -4,27 +4,21 @@
             [db.mongo :refer :all]
             [somnium.congomongo :as m]))
 
-(def conn
-  (m/make-connection "mydb"
-                     :host "127.0.0.1"
-                     :port 27017))
-(m/set-connection! conn)
-
 (defn my-handler [{:keys [url body]}]
   ;;(println url "has a count of" (count body))
   (if (urlvalidator url) 
     (if (urlismovie url) 
       (insertmovie (extractmovie body)) 
-      false) 
-    false))
+      (println url)) 
+    (println url)))
 
 (def c (crawl {;; initial URL to start crawling at (required)
-               :url "http://www.rottentomatoes.com/m/the_wolverine_2012/"
+               :url "http://www.rottentomatoes.com/"
                ;; handler to use for each page crawled (required)
                :handler my-handler
                ;; number of threads to use for crawling, (optional,
                ;; defaults to 5)
-               :workers 20
+               :workers 5
                ;; number of urls to spider before crawling stops, note
                ;; that workers must still be stopped after crawling
                ;; stops. May be set to -1 to specify no limit.
@@ -42,16 +36,16 @@
                ;; limits to the same domain as the original :url, if set
                ;; to a string, limits crawling to the hostname of the
                ;; given url
-               :host-limit false}))
+               :host-limit true}))
 
 ;; ... crawling ensues ...
 
 (thread-status c)
 ;; returns a map of thread-id to Thread.State:
-;;{33 #<State RUNNABLE>, 34 #<State RUNNABLE>, 35 #<State RUNNABLE>,
-;; 36 #<State RUNNABLE>, 37 #<State RUNNABLE>, 38 #<State RUNNABLE>,
-;; 39 #<State RUNNABLE>, 40 #<State RUNNABLE>, 41 #<State RUNNABLE>,
-;; 42 #<State RUNNABLE>}
+{33 #<State RUNNABLE>, 34 #<State RUNNABLE>, 35 #<State RUNNABLE>,
+ 36 #<State RUNNABLE>, 37 #<State RUNNABLE>, 38 #<State RUNNABLE>,
+ 39 #<State RUNNABLE>, 40 #<State RUNNABLE>, 41 #<State RUNNABLE>,
+ 42 #<State RUNNABLE>}
 
 (add-worker c)
 ;; adds an additional thread worker to the pool

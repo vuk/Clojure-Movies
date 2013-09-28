@@ -1,0 +1,2 @@
+cmdhistory=["(clojure.core/ns db.mongo)\\n(defn insertmovie\\n  \\"Insert movie into database\\"\\n  [movie]\\n  (m/insert\! \:movie\\n             movie)\\n  (println movie))\\n(clojure.core/ns web.home)"]
+eclipse.preferences.version=1

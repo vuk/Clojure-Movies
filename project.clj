@@ -7,4 +7,8 @@
                  [itsy "0.1.1"]
                  [enlive "1.1.4"]
                  [org.clojure/data.json "0.2.3"]
-                 [congomongo "0.4.1"]])
+                 [congomongo "0.4.1"]
+                 [ring "1.2.0"]
+                 [hiccup "1.0.4"]
+						     [compojure "1.1.5"]
+						     [clj-json "0.5.3"]])
