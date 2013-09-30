@@ -1,7 +1,9 @@
 (ns db.mongo
   (:require [somnium.congomongo :as m]
             [hiccup.core :refer :all]
-            [hiccup.page :refer :all]))
+            [hiccup.page :refer :all]
+            [Helpers.htmlhelp :refer :all])
+  (:use ring.util.codec))
 
 (def conn
   (m/make-connection "movies"
@@ -20,7 +22,7 @@
   "Echo single movie"
   [movie]
   [:div {:class "row"} 
-	 [:div {:class "span3"} [:a {:href (clojure.string/join ["/movie/" (get movie :name)])} (get movie :name)]]
+	 [:div {:class "span3"} [:a {:href (clojure.string/join ["/movie/" (get movie :_id)])} (get movie :name)]]
 	 [:div {:class "span3"} (get movie :datepublished)]
 	 [:div {:class "span6"} (get movie :description)]
   [:div {:class "clearfix"}]
@@ -57,9 +59,12 @@
      [:head
       [:title "Naslovna"]
       (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      (include-js "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+      (include-js "http://puskice.org/assets/js/is.js")
       ]
      [:body 
       [:div {:class "container"}
+       (returnmenu)
        [:h1 "Movies"]
       (if (not (empty? movies))
           (echofirst movies)
@@ -79,18 +84,21 @@
 
 (defn getsingle
   "Get single movie"
-  [name]
+  [id]
   (def movie (m/fetch-one :movie
-                          :where {:name name}))
+                          :where {:_id (m/object-id id)}))
   (println movie)
   (html 
     [:html
      [:head
       [:title (str "Movie - " (get movie :name))]
       (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      (include-js "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+      (include-js "http://puskice.org/assets/js/is.js")
       ]
      [:body 
       [:div {:class "container"}
+       (returnmenu)
        [:h1 (get movie :name)]
        [:div {:class "well"}
         [:div {:class "row"}
@@ -110,3 +118,10 @@
        ]
       ]]))
 
+(defn findmovie
+  "Find movie by query"
+  [query]
+  (let [search (re-pattern (str "(?i).*" (url-decode query) ".*"))
+        movies (m/fetch :movie :where {:$or [{:name search}, {:description search}]})]
+    (returnall movies))
+ )

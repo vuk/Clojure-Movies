@@ -1,8 +1,10 @@
 (ns web.home
   (:use compojure.core)
   (:require [compojure.route :as route]
-            [db.mongo :refer :all])
-  (:use ring.adapter.jetty))
+            [db.mongo :refer :all]
+            [compojure.handler :as handler])
+  (:use ring.adapter.jetty)
+  (:use ring.util.codec))
 
 (defn parse-int [s]
    (Integer. (re-find  #"\d+" s )))
@@ -13,7 +15,8 @@
        (getallmovies (parse-int offset) 10))
   (GET "/movie/:id" [id]
        (getsingle id))
-  (GET "/list" [] "<h1>Hello World</h1>")
+  (GET "/search/:query" [query]
+       (findmovie query))
   (route/not-found "<h1>Page not found</h1>"))
  
-(run-jetty app {:port 8080})
+(run-jetty (handler/site app) {:port 8080})
