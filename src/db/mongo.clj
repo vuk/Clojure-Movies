@@ -52,7 +52,7 @@
 
 (defn returnall
   "Create structure for all movies"
-  [movies]
+  [movies offset]
   ;(println movies)
   (html 
     [:html
@@ -68,7 +68,24 @@
        [:h1 "Movies"]
       (if (not (empty? movies))
           (echofirst movies)
-          )]]]
+          )
+      (if (< 9 offset)
+        [:div {:class "row" :style "height: 60px"} 
+         [:div {:class "span6"}
+          [:a {:href (str "/" (- offset 10))} "<< Prethodna stranica"]
+          ]
+         [:div {:class "span6"}
+          [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
+          ]
+         ]
+        [:div {:class "row" :style "height: 60px"}
+         [:div {:class "span12"}
+          [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
+         ]
+         ])
+      ]
+      ]
+     ]
         )
   )
 
@@ -79,7 +96,7 @@
                        :skip offset
                        :limit limit))
   ;(println movies)
-  (returnall movies)
+  (returnall movies offset)
   )
 
 (defn getsingle
