@@ -2,8 +2,10 @@
   (:require [somnium.congomongo :as m]
             [hiccup.core :refer :all]
             [hiccup.page :refer :all]
-            [Helpers.htmlhelp :refer :all])
-  (:use ring.util.codec))
+            [Helpers.htmlhelp :refer :all]
+            [ring.util.response :as resp])
+  (:use ring.util.codec)
+  (:use ring.middleware.params))
 
 (def conn
   (m/make-connection "movies"
@@ -58,7 +60,7 @@
     [:html
      [:head
       [:title "Naslovna"]
-      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      (include-css "http://puskice.org/assets/css/bootstrap.css")
       (include-js "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
       (include-js "http://puskice.org/assets/js/is.js")
       ]
@@ -109,7 +111,7 @@
     [:html
      [:head
       [:title (str "Movie - " (get movie :name))]
-      (include-css "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css")
+      (include-css "http://puskice.org/assets/css/bootstrap.css")
       (include-js "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
       (include-js "http://puskice.org/assets/js/is.js")
       ]
@@ -129,7 +131,10 @@
          [:div {:class "span6"}
           [:h2 "Description"]
           [:p (get movie :description)]
-          [:p [:strong "Production Company: "] (get movie :productioncompany)]]
+          [:p [:strong "Production Company: "] (get movie :productioncompany)]
+          [:p [:strong "Content rating: "] (get movie :contentrating)]
+          [:p [:strong "Genre: "] (get movie :genre)]
+          [:a {:href (str "/edit/" (get movie :_id))} [:p [:strong "Edit: "] (get movie :name)]]]
          ]
         ]
        ]
@@ -142,3 +147,90 @@
         movies (m/fetch :movie :where {:$or [{:name search}, {:description search}]})]
     (returnall movies))
  )
+
+
+(defn geteditsingle
+  "Get single movie"
+  [id]
+  (def movie (m/fetch-one :movie
+                          :where {:_id (m/object-id id)}))
+  (println movie)
+  (html 
+    [:html
+     [:head
+      [:title (str "Movie - " (get movie :name))]
+      (include-css "http://puskice.org/assets/css/bootstrap.css")
+      (include-js "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+      (include-js "http://puskice.org/assets/js/is.js")
+      ]
+     [:body 
+      [:div {:class "container"}
+       (returnmenu)
+       [:h1 (get movie :name)]
+       [:div {:class "well"}
+        [:form {:action "/save"
+                :method "post"}
+         [:input {:type "hidden"
+                  :name "id"
+                  :value (get movie :_id)}]
+         [:div {:class "row"}
+          [:div {:class "span3"}
+           [:p "Name: "]
+           [:input {:name "name"
+	                    :type "text"
+	                    :value (get movie :name)}]
+	          [:p "Duration: "]
+	          [:input {:name "duration"
+	                    :type "text"
+	                    :value (get movie :duration)}]
+	          [:p "Publish date: "]
+	          [:input {:name "datepublished"
+	                    :type "text"
+	                    :value (get movie :datepublished)}]
+	          [:img {:src (get movie :image)}]
+	         ]
+	         [:div {:class "span6"}
+	          [:h2 "Description"]
+	          [:textarea {:name "description"
+	                      :cols "80"
+	                      :rows "10"} (get movie :description)]
+	          [:p [:strong "Production Company: "]]
+	          [:input {:name "productioncompany"
+	                    :type "text"
+	                    :value (get movie :productioncompany)}]
+           [:p [:strong "Genre: "]]
+	          [:input {:name "genre"
+	                    :type "text"
+	                    :value (get movie :genre)}]
+           [:br]
+            [:input {:class "btn btn-primary"
+                   :type "submit"
+                   :name "submit"
+                   :value "Save"}]
+           ]
+	        ]
+         ]
+        ]
+       ]
+      ]]))
+
+(defn savechanges
+  "Save changes made to movie"
+  [name description id genre productioncompany datepublished]
+  (def movie (m/fetch-one :movie
+                          :where {:_id (m/object-id id)}))
+  (m/update! :movie movie (merge movie {:name name
+                                        :description description
+                                        :genre genre
+                                        :productioncompany productioncompany
+                                        :datepublished datepublished}))
+  (resp/redirect (str "/movie/" id))
+  )
+
+
+
+
+
+
+
+
