@@ -101,7 +101,6 @@
   [id]
   (def movie (m/fetch-one :movie
                           :where {:_id (m/object-id id)}))
-  (println movie)
   (html 
     [:html
      [:head
@@ -140,7 +139,7 @@
   [query]
   (let [search (re-pattern (str "(?i).*" (url-decode query) ".*"))
         movies (m/fetch :movie :where {:$or [{:name search}, {:description search}]})]
-    (returnall movies))
+    (returnall movies 0))
   )
 
 
@@ -149,7 +148,6 @@
   [id]
   (def movie (m/fetch-one :movie
                           :where {:_id (m/object-id id)}))
-  (println movie)
   (html 
     [:html
      [:head

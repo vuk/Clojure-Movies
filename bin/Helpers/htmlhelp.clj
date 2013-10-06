@@ -17,8 +17,7 @@
               :class "search-query" 
               :placeholder "Search" 
               :id "search-field"
-              :style "height: 30px"
-              :name "query"}]
+              :style "height: 30px"}]
      ]
     ]
    ])
