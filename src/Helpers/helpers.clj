@@ -28,10 +28,10 @@
   "Check if url is movie url on rottentomatoes.com"
   [url]
   (if (and (substring? "http://www.rottentomatoes.com/m/" url) 
-               (not (substring? "?" url)) 
-               (not (substring? "/movies_like_" url)) 
-               (not (substring? "/news/" url)) 
-               (not (substring? "/forum" url))) 
+           (not (substring? "?" url)) 
+           (not (substring? "/movies_like_" url)) 
+           (not (substring? "/news/" url)) 
+           (not (substring? "/forum" url))) 
     true
     false))
 
@@ -39,36 +39,36 @@
   "Extract attribute from HTML"
   [html value]
   (def itemprop (e/select-nodes* (e/html-snippet html)
-                 [(e/attr= :itemprop value) e/text-node]))
+                                 [(e/attr= :itemprop value) e/text-node]))
   (first itemprop))
 
 (defn getimage
   "Extract image src from HTML"
   [html value]
   (def imgtag (e/select-nodes* (e/html-snippet html)
-                   [(e/attr= :itemprop value)]))
+                               [(e/attr= :itemprop value)]))
   (get-in (first imgtag) [:attrs :src]))
 
 (defn getdatepublished
   "Extract datepublished from HTML"
   [html value]
   (def datepublish (e/select-nodes* (e/html-snippet html)
-                   [(e/attr= :itemprop value)]))
+                                    [(e/attr= :itemprop value)]))
   (get-in (first datepublish) [:attrs :content]))
 
 (defn extractmovie
   "Extract movie data from HTML"
   [html]
   (def currentmovie (struct-map movie 
-             :name (getitemprop html "name") 
-             :description (string/trim-newline (string/trim (getitemprop html "description")))
-             :contentrating (getitemprop html "contentrating")
-             :duration (getitemprop html "duration")
-             :genre (getitemprop html "genre")
-             :image (getimage html "image")
-             :datepublished (getdatepublished html "datePublished")
-             :productioncompany (getitemprop html "productionCompany")
-             :type "http://schema.org/Movie"))
+                                :name (getitemprop html "name") 
+                                :description (string/trim-newline (string/trim (getitemprop html "description")))
+                                :contentrating (getitemprop html "contentrating")
+                                :duration (getitemprop html "duration")
+                                :genre (getitemprop html "genre")
+                                :image (getimage html "image")
+                                :datepublished (getdatepublished html "datePublished")
+                                :productioncompany (getitemprop html "productionCompany")
+                                :type "http://schema.org/Movie"))
   currentmovie
   )
 
