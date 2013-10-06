@@ -19,6 +19,6 @@
               :id "search-field"
               :style "height: 30px"
               :name "query"}]
-    ]
+     ]
     ]
    ])

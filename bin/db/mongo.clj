@@ -16,40 +16,37 @@
 (defn insertmovie
   "Insert movie into database"
   [movie]
-  (m/insert! :movie
-             movie)
-  (println movie))
+  (m/insert! :movie movie))
 
 (defn echosingle
   "Echo single movie"
   [movie]
   [:div {:class "row"} 
-	 [:div {:class "span3"} [:a {:href (clojure.string/join ["/movie/" (get movie :_id)])} (get movie :name)]]
-	 [:div {:class "span3"} (get movie :datepublished)]
-	 [:div {:class "span6"} (get movie :description)]
-  [:div {:class "clearfix"}]
-  [:hr]
-	 ]
-  )
+   [:div {:class "span3"} [:a {:href (clojure.string/join ["/movie/" (get movie :_id)])} (get movie :name)]]
+   [:div {:class "span3"} (get movie :datepublished)]
+   [:div {:class "span6"} (get movie :description)]
+   [:div {:class "clearfix"}]
+   [:hr]
+   ])
 
 (defn echofirst
   "Echo single movie"
   ([movies]
-  (if (not (empty? movies))
-    ;;first pass - no previous response - wrap current response in container
-    (do
-      (echofirst (rest movies) (into [:div] [(echosingle (first movies))]))
-      )
-    ))
+    (if (not (empty? movies))
+      ;;first pass - no previous response - wrap current response in container
+      (do
+        (echofirst (rest movies) (into [:div] [(echosingle (first movies))]))
+        )
+      ))
   ([movies response]
     (if (not (empty? movies))
       ;;every other pass - append current response to previous one and pass it into next iteration
-    (do
-      (recur (rest movies) (into response [(echosingle (first movies))]))
-      )
+      (do
+        (recur (rest movies) (into response [(echosingle (first movies))]))
+        )
       ;;return response when list is empty
-    response
-    ))
+      response
+      ))
   )
 
 (defn returnall
@@ -68,28 +65,26 @@
       [:div {:class "container"}
        (returnmenu)
        [:h1 "Movies"]
-      (if (not (empty? movies))
-          (echofirst movies)
-          )
-      (if (< 9 offset)
-        [:div {:class "row" :style "height: 60px"} 
-         [:div {:class "span6"}
-          [:a {:href (str "/" (- offset 10))} "<< Prethodna stranica"]
+       (if (not (empty? movies))
+         (echofirst movies)
+         )
+       (if (< 9 offset)
+         [:div {:class "row" :style "height: 60px"} 
+          [:div {:class "span6"}
+           [:a {:href (str "/" (- offset 10))} "<< Prethodna stranica"]
+           ]
+          [:div {:class "span6"}
+           [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
+           ]
           ]
-         [:div {:class "span6"}
-          [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
-          ]
-         ]
-        [:div {:class "row" :style "height: 60px"}
-         [:div {:class "span12"}
-          [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
-         ]
-         ])
+         [:div {:class "row" :style "height: 60px"}
+          [:div {:class "span12"}
+           [:a {:href (str "/" (+ offset 10))} "Sledeca stranica >>"]
+           ]
+          ])
+       ]
       ]
-      ]
-     ]
-        )
-  )
+     ]))
 
 (defn getallmovies
   "Get movies from database"
@@ -127,7 +122,7 @@
           [:p "Publish date: "
            [:i (get movie :datepublished)]]
           [:img {:src (get movie :image)}]
-         ]
+          ]
          [:div {:class "span6"}
           [:h2 "Description"]
           [:p (get movie :description)]
@@ -146,7 +141,7 @@
   (let [search (re-pattern (str "(?i).*" (url-decode query) ".*"))
         movies (m/fetch :movie :where {:$or [{:name search}, {:description search}]})]
     (returnall movies))
- )
+  )
 
 
 (defn geteditsingle
@@ -177,18 +172,18 @@
           [:div {:class "span3"}
            [:p "Name: "]
            [:input {:name "name"
-	                    :type "text"
-	                    :value (get movie :name)}]
+                    :type "text"
+                    :value (get movie :name)}]
 	          [:p "Duration: "]
 	          [:input {:name "duration"
-	                    :type "text"
-	                    :value (get movie :duration)}]
+                    :type "text"
+                    :value (get movie :duration)}]
 	          [:p "Publish date: "]
 	          [:input {:name "datepublished"
-	                    :type "text"
-	                    :value (get movie :datepublished)}]
+                    :type "text"
+                    :value (get movie :datepublished)}]
 	          [:img {:src (get movie :image)}]
-	         ]
+           ]
 	         [:div {:class "span6"}
 	          [:h2 "Description"]
 	          [:textarea {:name "description"
@@ -196,19 +191,19 @@
 	                      :rows "10"} (get movie :description)]
 	          [:p [:strong "Production Company: "]]
 	          [:input {:name "productioncompany"
-	                    :type "text"
-	                    :value (get movie :productioncompany)}]
+                    :type "text"
+                    :value (get movie :productioncompany)}]
            [:p [:strong "Genre: "]]
 	          [:input {:name "genre"
-	                    :type "text"
-	                    :value (get movie :genre)}]
+                    :type "text"
+                    :value (get movie :genre)}]
            [:br]
-            [:input {:class "btn btn-primary"
-                   :type "submit"
-                   :name "submit"
-                   :value "Save"}]
+           [:input {:class "btn btn-primary"
+                    :type "submit"
+                    :name "submit"
+                    :value "Save"}]
            ]
-	        ]
+          ]
          ]
         ]
        ]
@@ -224,13 +219,4 @@
                                         :genre genre
                                         :productioncompany productioncompany
                                         :datepublished datepublished}))
-  (resp/redirect (str "/movie/" id))
-  )
-
-
-
-
-
-
-
-
+  (resp/redirect (str "/movie/" id)))
