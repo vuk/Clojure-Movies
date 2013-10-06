@@ -1,14 +1,13 @@
 (ns Movies.core
   (:require [itsy.core :refer :all] 
-            [Helpers.helpers :refer :all]
-            [db.mongo :refer :all]
-            [somnium.congomongo :as m]))
+            [Helpers.helpers :as h]
+            [db.mongo :refer :all]))
 
 (defn my-handler [{:keys [url body]}]
   ;;(println url "has a count of" (count body))
-  (if (urlvalidator url) 
-    (if (urlismovie url) 
-      (insertmovie (extractmovie body)) 
+  (if (h/urlvalidator url) 
+    (if (h/urlismovie url) 
+      (insertmovie (h/extractmovie body)) 
       (println url)) 
     (println url)))
 
