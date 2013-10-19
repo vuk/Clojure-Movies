@@ -11,4 +11,5 @@
                  [ring "1.2.0"]
                  [hiccup "1.0.4"]
 						     [compojure "1.1.5"]
-						     [clj-json "0.5.3"]])
+						     [clj-json "0.5.3"]]
+  :java-source-path [["resources/apache-jena"]])

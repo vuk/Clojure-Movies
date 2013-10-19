@@ -1,7 +1,8 @@
 (ns Movies.core
   (:require [itsy.core :refer :all] 
             [Helpers.helpers :as h]
-            [db.mongo :refer :all]))
+            [db.mongo :refer :all]
+            [db.rdf :as r]))
 
 (defn my-handler [{:keys [url body]}]
   ;;(println url "has a count of" (count body))
