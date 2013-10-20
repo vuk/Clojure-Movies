@@ -8,7 +8,7 @@
   ;;(println url "has a count of" (count body))
   (if (h/urlvalidator url) 
     (if (h/urlismovie url) 
-      (insertmovie (h/extractmovie body)) 
+      (r/insertmovie (h/extractmovie body)) 
       (println url)) 
     (println url)))
 

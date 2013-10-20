@@ -5,3 +5,9 @@
             [ring.util.response :as resp])
   (:use ring.util.codec)
   (:use ring.middleware.params))
+
+(defn insertmovie
+  "Insert movie into rdf database"
+  [movie]
+  (println movie)  
+)
